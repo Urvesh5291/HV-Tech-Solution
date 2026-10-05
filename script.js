@@ -1559,10 +1559,19 @@ function closeInvoiceModal() {
 // VISITING CARD & FLOATING WHATSAPP POPUP HELPERS
 // -------------------------------------------------------------
 
-function toggleWaPopup() {
+function toggleWaPopup(e) {
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
     const popup = document.getElementById("waPopupMenu");
     if (popup) {
-        popup.classList.toggle("open");
+        const isOpen = popup.classList.contains("open") || popup.classList.contains("show");
+        if (isOpen) {
+            popup.classList.remove("open", "show");
+        } else {
+            popup.classList.add("open", "show");
+        }
     }
 }
 
@@ -1580,9 +1589,9 @@ function closeVisitingCardModal() {
 document.addEventListener("click", function(e) {
     const popup = document.getElementById("waPopupMenu");
     const btn = document.getElementById("floatingWaBtn");
-    if (popup && popup.classList.contains("open")) {
+    if (popup && (popup.classList.contains("open") || popup.classList.contains("show"))) {
         if (!popup.contains(e.target) && !btn.contains(e.target)) {
-            popup.classList.remove("open");
+            popup.classList.remove("open", "show");
         }
     }
 });
