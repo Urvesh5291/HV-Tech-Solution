@@ -71,6 +71,18 @@
         </div>
     </header>
 
+    <!-- Main Navigation Bar -->
+    <nav class="main-navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-link active">🛒 કેમેરા સ્ટોર (Shop)</a>
+            <a href="#categoryShowcase" class="nav-link">🏷️ કેમેરા કેટેગરીઝ (Categories)</a>
+            <a href="quotation.html" class="nav-link">📋 ક્વોટેશન કેલ્ક્યુલેટર (Get Quotation)</a>
+            <a href="services.html" class="nav-link">🛠️ સર્વિસ & રીપેરીંગ (Services)</a>
+            <a href="services.html#serviceBooking" class="nav-link">📅 સર્વિસ બુકિંગ (Book Service)</a>
+            <a href="#inquirySection" class="nav-link">📞 સાઇટ સર્વે ઇન્ક્વાયરી</a>
+        </div>
+    </nav>
+
     <!-- 3. Admin Live Action Quick Banner (Shows when Admin Mode is ON) -->
     <div class="admin-quick-banner" id="adminQuickBanner">
         <div class="admin-banner-inner">
@@ -98,8 +110,9 @@
             </p>
             <div class="hero-buttons">
                 <a href="#catalog" class="btn-hero-primary" data-i18n="shop_btn">🛍️ કેમેરા ખરીદો / Shop Now</a>
+                <a href="quotation.html" class="btn-hero-primary" style="background:#0284c7;">📋 લાઈવ ક્વોટેશન કેલ્ક્યુલેટર</a>
+                <a href="services.html" class="btn-hero-secondary" style="background:#0f766e; color:white; border-color:#0f766e;">🛠️ કેમેરા રીપેરીંગ & સર્વિસ</a>
                 <button class="btn-hero-secondary" onclick="openOwnerHub('add')" data-i18n="seller_btn">➕ પ્રોડક્ટ ઉમેરો / કિંમત બદલો (Seller)</button>
-                <a href="#inquirySection" class="btn-hero-secondary" data-i18n="survey_btn">📋 ફ્રી સાઇટ સર્વે ક્વોટેશન</a>
             </div>
         </div>
     </section>
@@ -138,6 +151,82 @@
         </div>
     </section>
 
+    <!-- 5.5. Category Showcase & Quick Selection Grid -->
+    <section class="category-showcase-section" id="categoryShowcase">
+        <div class="category-showcase-header">
+            <div>
+                <span class="category-section-tag">🏷️ CCTV કેમેરા કેટેગરીઝ (CATEGORIES)</span>
+                <h2>તમારી પસંદગી મુજબ કેટેગરી પસંદ કરો</h2>
+                <p>કોઈપણ કેટેગરી પર ક્લિક કરો - સ્ટોરમાં આપમેળે તે કેમેરા ફિલ્ટર થઈ જશે</p>
+            </div>
+            <a href="quotation.html" class="btn-hero-primary" style="padding: 9px 18px; font-size: 13px; text-decoration: none;">
+                📋 કેટેગરી મુજબ ક્વોટેશન કેલ્ક્યુલેટર
+            </a>
+        </div>
+
+        <div class="category-cards-grid">
+            <!-- Card 1: All Cameras -->
+            <div class="cat-showcase-card active" data-cat="all" onclick="setCategory('all', this)">
+                <div class="cat-card-icon-wrap" style="background: rgba(30, 41, 59, 0.08); color: #0f172a;">🔘</div>
+                <div class="cat-card-body">
+                    <h3>બધા કેમેરા (All)</h3>
+                    <p>સ્ટોરના બધા જ લેટેસ્ટ HD, IP, PTZ & WiFi કેમેરા</p>
+                </div>
+                <span class="cat-card-count" id="countCatAll">બધા મોડલ્સ</span>
+            </div>
+
+            <!-- Card 2: HD Analog Cameras -->
+            <div class="cat-showcase-card" data-cat="hd" onclick="setCategory('hd', this)">
+                <div class="cat-card-icon-wrap" style="background: rgba(37, 99, 235, 0.1); color: #2563eb;">📹</div>
+                <div class="cat-card-body">
+                    <h3>HD Analog કેમેરા</h3>
+                    <p>બજેટ-ફ્રેન્ડલી વાયર્ડ 2.4MP થી 5MP ColorVu મોડલ્સ</p>
+                </div>
+                <span class="cat-card-count" id="countCatHd">HD Series</span>
+            </div>
+
+            <!-- Card 3: IP Network Cameras -->
+            <div class="cat-showcase-card" data-cat="ip" onclick="setCategory('ip', this)">
+                <div class="cat-card-icon-wrap" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">🌐</div>
+                <div class="cat-card-body">
+                    <h3>IP Network PoE કેમેરા</h3>
+                    <p>4K અલ્ટ્રા HD, સિંગલ નેટવર્ક વાયર & AI સ્માર્ટ ડિટેક્શન</p>
+                </div>
+                <span class="cat-card-count" id="countCatIp">PoE Series</span>
+            </div>
+
+            <!-- Card 4: 360° PTZ Cameras -->
+            <div class="cat-showcase-card" data-cat="ptz" onclick="setCategory('ptz', this)">
+                <div class="cat-card-icon-wrap" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">🔄</div>
+                <div class="cat-card-body">
+                    <h3>360° PTZ સ્પીડ ડોમ</h3>
+                    <p>ઓપ્ટિકલ ઝૂમ, 360° રોટેશન & હ્યુમન ઓટો ટ્રેકિંગ</p>
+                </div>
+                <span class="cat-card-count" id="countCatPtz">PTZ Zoom</span>
+            </div>
+
+            <!-- Card 5: WiFi Smart Cameras -->
+            <div class="cat-showcase-card" data-cat="wifi" onclick="setCategory('wifi', this)">
+                <div class="cat-card-icon-wrap" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">📶</div>
+                <div class="cat-card-body">
+                    <h3>વાઇફાઇ સ્માર્ટ કેમેરા</h3>
+                    <p>વાયરલેસ, 2-Way ઓડિયો & SD કાર્ડ રેકોર્ડિંગ</p>
+                </div>
+                <span class="cat-card-count" id="countCatWifi">Wireless</span>
+            </div>
+
+            <!-- Card 6: Complete DVR/NVR Kits -->
+            <div class="cat-showcase-card" data-cat="kit" onclick="setCategory('kit', this)">
+                <div class="cat-card-icon-wrap" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">📦</div>
+                <div class="cat-card-body">
+                    <h3>કમ્પ્લીટ DVR કિટ્સ</h3>
+                    <p>કેમેરા + DVR + હાર્ડ ડિસ્ક + કેબલ ઓલ-ઇન-વન પેક</p>
+                </div>
+                <span class="cat-card-count" id="countCatKit">Combo Kits</span>
+            </div>
+        </div>
+    </section>
+
     <!-- 6. Main Product Catalog Section -->
     <main class="catalog-container" id="catalog">
         <div class="section-title-bar">
@@ -150,14 +239,30 @@
 
         <!-- Filter Bar -->
         <div class="filter-bar">
-            <!-- Category Tabs -->
-            <div class="category-tabs">
-                <button class="category-tab-btn active" onclick="setCategory('all', this)" data-i18n="tab_all">🔘 બધા કેમેરા (All)</button>
-                <button class="category-tab-btn" onclick="setCategory('hd', this)" data-i18n="tab_hd">📹 HD Analog કેમેરા</button>
-                <button class="category-tab-btn" onclick="setCategory('ip', this)" data-i18n="tab_ip">🌐 IP Network કેમેરા</button>
-                <button class="category-tab-btn" onclick="setCategory('ptz', this)" data-i18n="tab_ptz">🔄 360° PTZ કેમેરા</button>
-                <button class="category-tab-btn" onclick="setCategory('wifi', this)" data-i18n="tab_wifi">📶 વાઇફાઇ સ્માર્ટ કેમેરા</button>
-                <button class="category-tab-btn" onclick="setCategory('kit', this)" data-i18n="tab_kit">📦 કમ્પ્લીટ DVR કિટ્સ</button>
+            <!-- Category Tabs & Dropdown Container -->
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px;">
+                <!-- Category Tabs -->
+                <div class="category-tabs">
+                    <button class="category-tab-btn active" data-cat="all" onclick="setCategory('all', this)" data-i18n="tab_all">🔘 બધા કેમેરા (All)</button>
+                    <button class="category-tab-btn" data-cat="hd" onclick="setCategory('hd', this)" data-i18n="tab_hd">📹 HD Analog કેમેરા</button>
+                    <button class="category-tab-btn" data-cat="ip" onclick="setCategory('ip', this)" data-i18n="tab_ip">🌐 IP Network કેમેરા</button>
+                    <button class="category-tab-btn" data-cat="ptz" onclick="setCategory('ptz', this)" data-i18n="tab_ptz">🔄 360° PTZ કેમેરા</button>
+                    <button class="category-tab-btn" data-cat="wifi" onclick="setCategory('wifi', this)" data-i18n="tab_wifi">📶 વાઇફાઇ સ્માર્ટ કેમેરા</button>
+                    <button class="category-tab-btn" data-cat="kit" onclick="setCategory('kit', this)" data-i18n="tab_kit">📦 કમ્પ્લીટ DVR કિટ્સ</button>
+                </div>
+
+                <!-- Direct Category Select Dropdown -->
+                <div class="category-dropdown-wrap">
+                    <span class="filter-label">ઝડપી કેટેગરી સિલેક્ટ:</span>
+                    <select id="categorySelectDropdown" class="category-select-box" onchange="setCategory(this.value, null)">
+                        <option value="all">🔘 બધા કેમેરા (All Cameras)</option>
+                        <option value="hd">📹 HD Analog કેમેરા (2.4MP - 5MP)</option>
+                        <option value="ip">🌐 IP Network PoE કેમેરા (4K Ultra)</option>
+                        <option value="ptz">🔄 360° PTZ સ્પીડ ડોમ કેમેરા</option>
+                        <option value="wifi">📶 વાઇફાઇ સ્માર્ટ હોમ કેમેરા</option>
+                        <option value="kit">📦 કમ્પ્લીટ DVR/NVR કિટ્સ</option>
+                    </select>
+                </div>
             </div>
 
             <!-- Secondary Filters Row -->
@@ -274,27 +379,29 @@
                 </p>
             </div>
 
-            <!-- Categories -->
+            <!-- Categories (Direct Clickable Filters) -->
             <div class="footer-col">
-                <h3 data-i18n="footer_cat_title">કેમેરા કેટેગરીઝ</h3>
+                <h3 data-i18n="footer_cat_title">📸 કેમેરા કેટેગરીઝ</h3>
                 <ul class="footer-links">
-                    <li><a href="#catalog" onclick="setCategory('hd')">HD Analog Cameras</a></li>
-                    <li><a href="#catalog" onclick="setCategory('ip')">IP Network Cameras</a></li>
-                    <li><a href="#catalog" onclick="setCategory('ptz')">360° PTZ Speed Dome</a></li>
-                    <li><a href="#catalog" onclick="setCategory('wifi')">WiFi Smart Cameras</a></li>
-                    <li><a href="#catalog" onclick="setCategory('kit')">Complete DVR/NVR Kits</a></li>
+                    <li><a href="#catalog" onclick="setCategory('all')">🔘 બધા કેમેરા (All Cameras)</a></li>
+                    <li><a href="#catalog" onclick="setCategory('hd')">📹 HD Analog કેમેરા (2.4MP - 5MP)</a></li>
+                    <li><a href="#catalog" onclick="setCategory('ip')">🌐 IP Network PoE કેમેરા (4K)</a></li>
+                    <li><a href="#catalog" onclick="setCategory('ptz')">🔄 360° PTZ સ્પીડ ડોમ કેમેરા</a></li>
+                    <li><a href="#catalog" onclick="setCategory('wifi')">📶 વાઇફાઇ સ્માર્ટ હોમ કેમેરા</a></li>
+                    <li><a href="#catalog" onclick="setCategory('kit')">📦 કમ્પ્લીટ DVR/NVR કોમ્બો કિટ્સ</a></li>
                 </ul>
             </div>
 
-            <!-- Owner & Quick Management Links -->
+            <!-- Quick Links & Customer Services -->
             <div class="footer-col">
-                <h3 data-i18n="footer_admin_title">ઓનર / મેનેજમેન્ટ</h3>
+                <h3 data-i18n="footer_admin_title">⚡ ઝડપી લિંક્સ & સર્વિસ</h3>
                 <ul class="footer-links">
-                    <li><a href="javascript:void(0)" onclick="openLiveOrdersModal()" style="color:#38bdf8; font-weight:bold;">📦 ગ્રાહક લાઈવ ઓર્ડર્સ (Live Orders)</a></li>
-                    <li><a href="#" onclick="openOwnerHub('manage')">કિંમત & ફોટો મેનેજર</a></li>
-                    <li><a href="#" onclick="openOwnerHub('add')">નવી પ્રોડક્ટ ઉમેરો</a></li>
-                    <li><a href="#" onclick="openOwnerHub('settings')">દુકાન સેટિંગ્સ & GSTIN</a></li>
-                    <li><a href="#" onclick="openVisitingCardModal()">💳 વિઝિટિંગ કાર્ડ જુઓ (Card)</a></li>
+                    <li><a href="quotation.html" style="color:#fbbf24; font-weight:bold;">📋 ક્વોટેશન કેલ્ક્યુલેટર (Get Quote)</a></li>
+                    <li><a href="services.html" style="color:#38bdf8; font-weight:bold;">🛠️ કેમેરા રીપેરીંગ & સર્વિસ</a></li>
+                    <li><a href="services.html#serviceBooking">📅 સર્વિસ બુકિંગ (Book Visit)</a></li>
+                    <li><a href="javascript:void(0)" onclick="openLiveOrdersModal()">📦 ગ્રાહક લાઈવ ઓર્ડર્સ (Live Orders)</a></li>
+                    <li><a href="javascript:void(0)" onclick="openVisitingCardModal()">💳 ડિજિટલ વિઝિટિંગ કાર્ડ (Card)</a></li>
+                    <li><a href="javascript:void(0)" onclick="openOwnerHub('manage')">⚙️ કિંમત બદલો & એડમિન હબ</a></li>
                 </ul>
             </div>
 
@@ -333,12 +440,20 @@
                 </div>
 
                 <p style="font-size:12px; color:#94a3b8; margin-top:8px;">
-                    ⏰ સમય: સવારે 9:00 થી રાત્રે 8:30 (સોમવાર થી રવિવાર)
+                    ⏰ સમય: સવારે 9:00 થી રાત્રે 8:30 (સોમવાર થી રવિવાર)<br>
+                    ⚡ ઇમરજન્સી ટેકનિશિયન સપોર્ટ ઉપલબ્ધ
                 </p>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 HV Tech Solutions. સર્વાધિકાર સુરક્ષિત | Ahmedabad, Gujarat | 28+ Years of Trust.</p>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; max-width:1280px; margin:0 auto;">
+                <p style="margin:0;">&copy; 2026 HV Tech Solutions. સર્વાધિકાર સુરક્ષિત | Ahmedabad, Gujarat | 28+ Years of Trust.</p>
+                <div style="display:flex; gap:14px; font-size:12px; color:#94a3b8; flex-wrap:wrap;">
+                    <span>🛡️ 2 વર્ષ રિપ્લેસમેન્ટ વોરંટી</span>
+                    <span>🧾 18% GST પાકું બિલ</span>
+                    <span>⚡ સુપરફાસ્ટ ઇન્સ્ટોલેશન</span>
+                </div>
+            </div>
         </div>
     </footer>
 
@@ -895,25 +1010,39 @@
 
     <!-- Floating WhatsApp Popup Menu -->
     <div class="wa-popup-menu" id="waPopupMenu">
-        <div class="wa-popup-title">💬 WhatsApp Chat (સંપર્ક કરો)</div>
+        <div class="wa-popup-title">💬 WhatsApp & Contact (સંપર્ક કરો)</div>
         <a href="https://wa.me/919173565466?text=Hello%20Patel%20Urvesh%2C%20I%20am%20interested%20in%20CCTV%20Cameras%20from%20HV%20Tech%20Solutions" target="_blank" class="wa-popup-option">
             <div>
                 <b>Patel Urvesh</b><br>
-                <small style="color:#64748b;">+91 91735 65466</small>
+                <small style="color:#64748b;">+91 91735 65466 (WhatsApp)</small>
             </div>
             <div class="wa-popup-btn-icon">💬</div>
         </a>
         <a href="https://wa.me/917203875276?text=Hello%20Patel%20Harsh%2C%20I%20am%20interested%20in%20CCTV%20Cameras%20from%20HV%20Tech%20Solutions" target="_blank" class="wa-popup-option">
             <div>
                 <b>Patel Harsh</b><br>
-                <small style="color:#64748b;">+91 72038 75276</small>
+                <small style="color:#64748b;">+91 72038 75276 (WhatsApp)</small>
             </div>
             <div class="wa-popup-btn-icon">💬</div>
         </a>
+        <a href="tel:+919173565466" class="wa-popup-option" style="background:#f1f5f9;">
+            <div>
+                <b>📞 ડાયરેક્ટ કૉલ કરો</b><br>
+                <small style="color:#2563eb;">Urvesh: 9173565466 / Harsh: 7203875276</small>
+            </div>
+            <div class="wa-popup-btn-icon" style="background:#2563eb;">📞</div>
+        </a>
+        <a href="sms:+919173565466?body=Hello%20HV%20Tech%20Solutions%2C%20I%20need%20CCTV%20inquiry" class="wa-popup-option" style="background:#f8fafc;">
+            <div>
+                <b>✉️ SMS મોકલો (Message)</b><br>
+                <small style="color:#64748b;">સામાન્ય મેસેજ મોકલો</small>
+            </div>
+            <div class="wa-popup-btn-icon" style="background:#475569;">✉️</div>
+        </a>
     </div>
 
-    <!-- Floating WhatsApp Button -->
-    <button class="floating-wa-btn" id="floatingWaBtn" onclick="toggleWaPopup()" title="WhatsApp Chat / સંપર્ક કરો">
+    <!-- Floating WhatsApp / Message Button -->
+    <button class="floating-wa-btn" id="floatingWaBtn" onclick="toggleWaPopup(event)" title="WhatsApp & SMS / સંપર્ક કરો">
         💬
     </button>
 

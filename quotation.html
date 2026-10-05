@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCTV ક્વોટેશન કેલ્ક્યુલેટર - HV Tech Solutions Ahmedabad</title>
+    <meta name="description" content="HV Tech Solutions - IP Camera, HD Camera, WiFi Camera અને PTZ Camera માટેનું લાઈવ ઓટોમેટિક CCTV ક્વોટેશન કેલ્ક્યુલેટર. Patel Urvesh (9173565466) & Patel Harsh (7203875276).">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Gujarati:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- 1. Announcement Bar -->
+    <div class="announcement-bar">
+        <div class="announcement-inner">
+            <span class="announcement-badge">LIVE QUOTATION</span>
+            <span>🎉 તમારી જરૂરિયાત મુજબ CCTV કેમેરા સિલેક્ટ કરો - ઓટોમેટિક NVR/DVR, કેબલ, હાર્ડ ડિસ્ક અને બોક્સ સાથે પાકું 18% GST ક્વોટેશન મેળવો!</span>
+        </div>
+        <div class="announcement-contact">
+            <span>📞 <b>Patel Urvesh:</b> <a href="tel:+919173565466">+91 91735 65466</a></span>
+            <span>📞 <b>Patel Harsh:</b> <a href="tel:+917203875276">+91 72038 75276</a></span>
+        </div>
+    </div>
+
+    <!-- 2. Header -->
+    <header class="site-header">
+        <div class="header-container">
+            <a href="index.html" class="logo-area">
+                <img src="hv_logo.png" alt="HV Logo" class="site-logo-img">
+                <div class="logo-text">
+                    <h1>HV Tech <span>Solutions</span></h1>
+                    <p>Professional CCTV Surveillance & Security Systems</p>
+                </div>
+            </a>
+
+            <!-- Header Actions -->
+            <div class="header-actions">
+                <a href="index.html" class="btn-hero-secondary" style="padding: 8px 16px; font-size: 13px; text-decoration: none;">
+                    🛒 સ્ટોર પર જાઓ
+                </a>
+                <button class="btn-hero-primary" onclick="printQuotation()" style="padding: 8px 16px; font-size: 13px;">
+                    🖨️ ક્વોટેશન પ્રિન્ટ
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 3. Navigation Bar -->
+    <nav class="main-navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-link">🛒 કેમેરા સ્ટોર (Shop)</a>
+            <a href="index.html#categoryShowcase" class="nav-link">🏷️ કેમેરા કેટેગરીઝ (Categories)</a>
+            <a href="quotation.html" class="nav-link active">📋 ક્વોટેશન કેલ્ક્યુલેટર (Get Quotation)</a>
+            <a href="services.html" class="nav-link">🛠️ સર્વિસ & રીપેરીંગ (Services)</a>
+            <a href="services.html#serviceBooking" class="nav-link">📅 સર્વિસ બુકિંગ (Book Service)</a>
+            <a href="index.html#inquirySection" class="nav-link">📞 સાઇટ સર્વે ઇન્ક્વાયરી</a>
+        </div>
+    </nav>
+
+    <!-- 4. Hero Section -->
+    <section class="quote-hero">
+        <div style="max-width: 900px; margin: 0 auto;">
+            <div class="hero-pill" style="margin-bottom: 10px;">📋 INSTANT CCTV ESTIMATE & QUOTATION BUILDER</div>
+            <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 12px;">
+                ઓટોમેટિક <span style="color: #fbbf24;">CCTV કેમેરા ક્વોટેશન</span> કેલ્ક્યુલેટર
+            </h1>
+            <p style="font-size: 14.5px; color: #cbd5e1; max-width: 750px; margin: 0 auto; line-height: 1.5;">
+                કેટેગરી (IP, HD, WiFi, PTZ) અને કેમેરા સંખ્યા (4, 8, 16) પસંદ કરો. NVR/DVR, સ્વીચ/SMPS, હાર્ડ ડિસ્ક, Cat-6 કેબલ (₹50/મીટર) અને PVC બોક્સ સાથેનું સંપૂર્ણ પારદર્શક 18% GST ક્વોટેશન તુરંત તૈયાર થશે!
+            </p>
+        </div>
+    </section>
+
+    <!-- 5. Main Quotation Container -->
+    <main class="site-main" style="max-width: 1280px; margin: 0 auto; padding: 30px 20px;">
+        
+        <!-- Step 1: Select Category Tabs -->
+        <div style="margin-bottom: 25px;">
+            <div style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                <span>1️⃣ કેટેગરી પસંદ કરો (Select Camera Type):</span>
+            </div>
+            <div class="quote-category-grid">
+                <div class="quote-category-btn active" id="catBtn-ip" onclick="switchQuoteCategory('ip')">
+                    <span class="quote-category-icon">🌐</span>
+                    <span class="quote-category-title">1. IP Network કેમેરા</span>
+                    <span class="quote-category-desc">4K NVR + PoE Switch + Cat-6 કેબલ (₹50/m) + PVC બોક્સ</span>
+                </div>
+                <div class="quote-category-btn" id="catBtn-hd" onclick="switchQuoteCategory('hd')">
+                    <span class="quote-category-icon">📹</span>
+                    <span class="quote-category-title">2. HD Analog કેમેરા</span>
+                    <span class="quote-category-desc">HD DVR + SMPS પાવર સપ્લાય + 3+1 વાયર + BNC/DC</span>
+                </div>
+                <div class="quote-category-btn" id="catBtn-wifi" onclick="switchQuoteCategory('wifi')">
+                    <span class="quote-category-icon">📶</span>
+                    <span class="quote-category-title">3. WiFi સ્માર્ટ કેમેરા</span>
+                    <span class="quote-category-desc">વાયરલેસ 360° PTZ + MicroSD મેમરી કાર્ડ + 2-Way ઓડિયો</span>
+                </div>
+                <div class="quote-category-btn" id="catBtn-ptz" onclick="switchQuoteCategory('ptz')">
+                    <span class="quote-category-icon">🔄</span>
+                    <span class="quote-category-title">4. 360° PTZ કેમેરા</span>
+                    <span class="quote-category-desc">હાઇ સ્પીડ ઓપ્ટિકલ ઝૂમ + 150m નાઇટ વિઝન + ઓટો ટ્રેકિંગ</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quotation Two-Column Workspace -->
+        <div class="quote-builder-layout">
+            
+            <!-- Left Column: Configuration Controls -->
+            <div class="quote-card">
+                <div class="quote-card-header">
+                    <div>
+                        <h3 style="color: #0f172a; font-size: 18px; margin: 0 0 4px;" id="configPanelTitle">⚙️ કન્ફિગરેશન સેટિંગ્સ</h3>
+                        <p style="margin: 0; font-size: 12px; color: #64748b;" id="configPanelSubtitle">કેમેરાની સંખ્યા અને મોડલ પસંદ કરો</p>
+                    </div>
+                    <span id="categoryBadge" style="background:#dbeafe; color:#1e40af; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:800;">
+                        IP CAMERA SETUP
+                    </span>
+                </div>
+
+                <!-- Camera Quantity Presets (4, 8, 16) -->
+                <div style="margin-bottom: 20px;">
+                    <label style="font-weight: 700; font-size: 13.5px; color: #0f172a; display: block; margin-bottom: 8px;">
+                        કેમેરાની સંખ્યા પસંદ કરો (Camera Quantity):
+                    </label>
+                    <div class="preset-chip-group" id="presetChipsContainer">
+                        <!-- Rendered by quotation.js -->
+                    </div>
+                </div>
+
+                <!-- Model / Resolution Selection -->
+                <div class="form-group">
+                    <label style="font-weight: 700; font-size: 13.5px; color: #0f172a;">કેમેરા મોડલ & સ્પેસિફિકેશન:</label>
+                    <select id="cfgModel" class="form-control" onchange="recalculateQuote()">
+                        <!-- Rendered dynamically -->
+                    </select>
+                </div>
+
+                <!-- Storage / Hard Disk / SD Card -->
+                <div class="form-group">
+                    <label style="font-weight: 700; font-size: 13.5px; color: #0f172a;" id="cfgStorageLabel">રેકોર્ડિંગ સ્ટોરેજ (Hard Disk):</label>
+                    <select id="cfgStorage" class="form-control" onchange="recalculateQuote()">
+                        <!-- Rendered dynamically -->
+                    </select>
+                </div>
+
+                <!-- Cabling Meters (Cat-6 @ 50/m or 3+1 @ 30/m) -->
+                <div class="form-group" id="cableGroup">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                        <label style="font-weight: 700; font-size: 13.5px; color: #0f172a;" id="cfgCableLabel">
+                            Cat-6 નેટવર્ક કેબલ (₹50 પ્રતિ મીટર):
+                        </label>
+                        <span style="font-size:12px; font-weight:bold; color:#0f766e;" id="cableCostPreview">₹4,000</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <input type="number" id="cfgCableMeters" class="form-control" value="80" min="10" max="1000" oninput="recalculateQuote()">
+                        <span style="font-size:13px; font-weight:600; color:#475569;">મીટર</span>
+                    </div>
+                    <small style="color:#64748b; font-size:11px;" id="cableHelpText">
+                        (4 કેમેરા માટે અંદાજે 80 મીટર કેબલ. તમારી સાઇટ મુજબ વધારી/ઘટાડી શકો છો)
+                    </small>
+                </div>
+
+                <!-- Included Accessories Auto Display (NVR, PoE/SMPS, PVC Box, Rack) -->
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; margin-bottom:18px;">
+                    <div style="font-size:12px; font-weight:800; color:#1e40af; text-transform:uppercase; margin-bottom:6px;">
+                        📦 આપમેળે ઉમેરાયેલા ઉપકરણો (Auto-Included):
+                    </div>
+                    <ul id="autoHardwareList" style="list-style:none; font-size:12.5px; color:#334155; display:flex; flex-direction:column; gap:5px;">
+                        <!-- Rendered dynamically -->
+                    </ul>
+                </div>
+
+                <!-- Installation Toggle -->
+                <div class="form-group">
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                        <input type="checkbox" id="cfgInstallCheck" checked onchange="recalculateQuote()" style="width:18px; height:18px;">
+                        <span style="font-size:13.5px; font-weight:700; color:#0f172a;" id="installToggleLabel">
+                            પ્રોફેશનલ ઇન્સ્ટોલેશન & વાયરિંગ ફિટિંગ શામેલ કરો
+                        </span>
+                    </label>
+                </div>
+
+                <!-- Customer Details for Quotation Print -->
+                <div style="border-top:1px solid #e2e8f0; padding-top:15px; margin-top:15px;">
+                    <h4 style="font-size:14px; color:#0f172a; margin-bottom:10px;">👤 ગ્રાહકની વિગત (બિલ / ક્વોટેશન માટે):</h4>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <input type="text" id="quoteCustName" class="form-control" placeholder="તમારું / કંપનીનું નામ" oninput="updateCustomerPreview()">
+                        <input type="tel" id="quoteCustPhone" class="form-control" placeholder="મોબાઇલ નંબર" oninput="updateCustomerPreview()">
+                    </div>
+                    <input type="text" id="quoteCustAddress" class="form-control" placeholder="સરનામું / સાઇટ વિસ્તાર (અમદાવાદ)" style="margin-top:8px;" oninput="updateCustomerPreview()">
+                </div>
+
+            </div>
+
+            <!-- Right Column: Real-Time Live Quotation Sheet -->
+            <div>
+                <div class="quote-card" id="quotationPrintArea" style="position:relative;">
+                    
+                    <!-- Quotation Sheet Header -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #0f172a; padding-bottom:12px; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <img src="hv_logo.png" alt="HV Logo" style="width:55px; height:auto; object-fit:contain; border-radius:6px;" onerror="this.style.display='none'">
+                            <div>
+                                <h2 style="color:#1e40af; margin:0 0 2px; font-size:20px; font-weight:800;">HV TECH SOLUTIONS</h2>
+                                <p style="margin:0 0 2px; font-size:11.5px; color:#475569;">CCTV & Electronic Security Solutions • 28+ Years Trust</p>
+                                <p style="margin:0; font-size:11px; color:#0f172a;">
+                                    <b>Patel Urvesh:</b> +91 91735 65466 | <b>Patel Harsh:</b> +91 72038 75276
+                                </p>
+                            </div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="background:#1e40af; color:white; padding:3px 10px; border-radius:4px; font-size:11px; font-weight:800; display:inline-block; margin-bottom:4px;">
+                                ESTIMATE QUOTATION
+                            </div>
+                            <div style="font-size:11.5px; font-family:monospace; font-weight:bold;" id="quoteNumber">HV-QT-2026-01</div>
+                            <div style="font-size:11px; color:#64748b;" id="quoteDate">06/10/2026</div>
+                            <div style="font-size:10px; color:#10b981; font-weight:bold;">● Valid for 15 Days</div>
+                        </div>
+                    </div>
+
+                    <!-- Client Details Ribbon -->
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px 12px; font-size:11.5px; margin-bottom:12px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px;">
+                        <div>
+                            <b>Quotation To:</b> <span id="previewCustName" style="color:#1e40af; font-weight:bold;">Valued Customer</span>
+                            &nbsp;|&nbsp; 📞 <span id="previewCustPhone">-</span>
+                        </div>
+                        <div>
+                            📍 <b>Location:</b> <span id="previewCustAddress">Ahmedabad, Gujarat</span>
+                        </div>
+                    </div>
+
+                    <!-- Itemized Quotation Table -->
+                    <div style="overflow-x:auto;">
+                        <table class="quote-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:25px; text-align:center;">#</th>
+                                    <th>ઉપકરણ વિગત (Item Description & Specification)</th>
+                                    <th style="text-align:center; width:55px;">Qty</th>
+                                    <th style="text-align:right; width:75px;">Rate (₹)</th>
+                                    <th style="text-align:right; width:85px;">Total (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="quoteItemsTbody">
+                                <!-- Rendered dynamically by quotation.js -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Price & 18% GST Breakdown -->
+                    <div style="border-top:2px solid #0f172a; padding-top:10px; margin-top:10px;">
+                        <div style="display:flex; justify-content:flex-end;">
+                            <div style="width:260px; font-size:12px;">
+                                <div style="display:flex; justify-content:space-between; padding:3px 0; color:#64748b;">
+                                    <span>Taxable Subtotal (કરપાત્ર):</span>
+                                    <span id="quoteSubtotal" style="font-weight:600; color:#0f172a;">₹0</span>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; padding:3px 0; color:#059669;">
+                                    <span>18% GST (CGST 9% + SGST 9%):</span>
+                                    <span id="quoteGst" style="font-weight:600;">₹0</span>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; padding:6px 0; border-top:1.5px solid #0f172a; font-size:15px; font-weight:800; color:#1e40af;">
+                                    <span>કુલ ક્વોટેશન રકમ:</span>
+                                    <span id="quoteGrandTotal">₹0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="font-size:11px; font-style:italic; color:#1e40af; font-weight:600; margin-top:4px;" id="quoteAmountInWords">
+                            INR Zero Rupees Only
+                        </div>
+                    </div>
+
+                    <!-- Terms & Signatory -->
+                    <div style="border-top:1px dashed #cbd5e1; padding-top:8px; margin-top:12px; display:flex; justify-content:space-between; font-size:10.5px; color:#64748b; flex-wrap:wrap; gap:10px;">
+                        <div>
+                            <b>Terms & Warranty:</b><br>
+                            • 2 Years Standard Replacement Warranty on Cameras & DVR/NVR.<br>
+                            • Free mobile remote app setup & 1 Year Onsite Service Support.<br>
+                            • Payment: 50% Advance with order, balance on completion.
+                        </div>
+                        <div style="text-align:center;">
+                            <br>
+                            <span style="border-top:1px solid #94a3b8; padding-top:3px; display:inline-block;"><b>Authorized Signatory</b><br>HV Tech Solutions</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Actions Bar below quotation -->
+                <div style="display:flex; gap:10px; margin-top:15px; flex-wrap:wrap;">
+                    <button class="btn-hero-primary" onclick="printQuotation()" style="flex:1.2; justify-content:center; padding:12px;">
+                        🖨️ ક્વોટેશન પ્રિન્ટ / PDF ડાઉનલોડ
+                    </button>
+                    <button class="btn-submit-inquiry" onclick="sendQuoteWhatsApp('9173565466')" style="flex:1; justify-content:center; padding:12px; font-size:13px; background:#25d366;">
+                        📲 Patel Urvesh (WA)
+                    </button>
+                    <button class="btn-submit-inquiry" onclick="sendQuoteWhatsApp('7203875276')" style="flex:1; justify-content:center; padding:12px; font-size:13px; background:#0f766e;">
+                        📲 Patel Harsh (WA)
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-top">
+            <div class="footer-col brand-col">
+                <div class="footer-logo">
+                    <img src="hv_logo.png" alt="HV Logo" style="width:48px; height:auto; object-fit:contain; border-radius:6px;">
+                    <div>
+                        <h2>HV Tech Solutions</h2>
+                        <p>Complete CCTV & Security Solutions</p>
+                    </div>
+                </div>
+                <p class="footer-desc">
+                    અમદાવાદ અને સમગ્ર ગુજરાતમાં CCTV કેમેરા સેલ્સ, ઇન્સ્ટોલેશન, રીપેરીંગ અને ક્વોટેશન સર્વિસીસ. 28+ વર્ષનો વિશ્વાસ.
+                </p>
+                <div class="footer-contact-mini">
+                    <p>📍 અમદાવાદ, ગુજરાત - 380001</p>
+                    <p>📧 hvtechsolutions2004@gmail.com</p>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h3>📸 કેમેરા કેટેગરીઝ</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html#catalog">🔘 બધા કેમેરા મોડલ્સ</a></li>
+                    <li><a href="index.html#catalog">📹 HD Analog Cameras</a></li>
+                    <li><a href="index.html#catalog">🌐 IP Network Cameras</a></li>
+                    <li><a href="index.html#catalog">🔄 360° PTZ Speed Dome</a></li>
+                    <li><a href="index.html#catalog">📶 WiFi Smart Cameras</a></li>
+                    <li><a href="index.html#catalog">📦 Complete DVR/NVR Kits</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>⚡ ઝડપી લિંક્સ & સર્વિસ</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html">🛒 કેમેરા સ્ટોર (Shop)</a></li>
+                    <li><a href="quotation.html" style="color:#fbbf24; font-weight:bold;">📋 ક્વોટેશન કેલ્ક્યુલેટર (Get Quote)</a></li>
+                    <li><a href="services.html" style="color:#38bdf8; font-weight:bold;">🛠️ CCTV સર્વિસ & રીપેરીંગ</a></li>
+                    <li><a href="services.html#serviceBooking">📅 સર્વિસ બુકિંગ (Book Visit)</a></li>
+                    <li><a href="index.html#inquirySection">📞 સાઇટ સર્વે ક્વોટેશન</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3 style="color:#fbbf24;">📞 સંપર્ક & WhatsApp (Helpline)</h3>
+                <div class="footer-contact-card">
+                    <div class="footer-contact-name">
+                        <span>👤 Patel Urvesh</span>
+                        <a href="https://wa.me/919173565466?text=Hello%20Patel%20Urvesh%2C%20regarding%20CCTV%20Quotation" target="_blank" class="footer-wa-badge">💬 WhatsApp</a>
+                    </div>
+                    <div class="footer-contact-phone">
+                        <a href="tel:+919173565466">📞 +91 91735 65466</a>
+                    </div>
+                </div>
+                <div class="footer-contact-card">
+                    <div class="footer-contact-name">
+                        <span>👤 Patel Harsh</span>
+                        <a href="https://wa.me/917203875276?text=Hello%20Patel%20Harsh%2C%20regarding%20CCTV%20Quotation" target="_blank" class="footer-wa-badge">💬 WhatsApp</a>
+                    </div>
+                    <div class="footer-contact-phone">
+                        <a href="tel:+917203875276">📞 +91 72038 75276</a>
+                    </div>
+                </div>
+                <p style="font-size:12px; color:#94a3b8; margin-top:8px;">
+                    ⏰ સમય: સવારે 9:00 થી રાત્રે 8:30 (સોમવાર થી રવિવાર)
+                </p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; max-width:1280px; margin:0 auto;">
+                <p style="margin:0;">© 2026 HV Tech Solutions. All Rights Reserved. CCTV Quotation Generator & Installation Service.</p>
+                <div style="display:flex; gap:14px; font-size:12px; color:#94a3b8; flex-wrap:wrap;">
+                    <span>🛡️ 2 વર્ષ રિપ્લેસમેન્ટ વોરંટી</span>
+                    <span>🧾 18% GST પાકું ક્વોટેશન</span>
+                    <span>⚡ સુરક્ષા સોલ્યુશન્સ</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating WhatsApp Popup Menu -->
+    <div class="wa-popup-menu" id="waPopupMenu">
+        <div class="wa-popup-title">💬 WhatsApp & Contact (સંપર્ક કરો)</div>
+        <a href="https://wa.me/919173565466?text=Hello%20Patel%20Urvesh%2C%20I%20need%20a%20CCTV%20Quotation" target="_blank" class="wa-popup-option">
+            <div>
+                <b>Patel Urvesh</b><br>
+                <small style="color:#64748b;">+91 91735 65466 (WhatsApp)</small>
+            </div>
+            <div class="wa-popup-btn-icon">💬</div>
+        </a>
+        <a href="https://wa.me/917203875276?text=Hello%20Patel%20Harsh%2C%20I%20need%20a%20CCTV%20Quotation" target="_blank" class="wa-popup-option">
+            <div>
+                <b>Patel Harsh</b><br>
+                <small style="color:#64748b;">+91 72038 75276 (WhatsApp)</small>
+            </div>
+            <div class="wa-popup-btn-icon">💬</div>
+        </a>
+        <a href="tel:+919173565466" class="wa-popup-option" style="background:#f1f5f9;">
+            <div>
+                <b>📞 ડાયરેક્ટ કૉલ કરો</b><br>
+                <small style="color:#2563eb;">Urvesh: 9173565466 / Harsh: 7203875276</small>
+            </div>
+            <div class="wa-popup-btn-icon" style="background:#2563eb;">📞</div>
+        </a>
+    </div>
+
+    <!-- Floating WhatsApp Button -->
+    <button class="floating-wa-btn" id="floatingWaBtn" onclick="toggleWaPopup(event)" title="WhatsApp & SMS / સંપર્ક કરો">
+        💬
+    </button>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="quotation.js"></script>
+</body>
+</html>

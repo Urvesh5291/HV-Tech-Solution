@@ -588,12 +588,77 @@ function clearSearch() {
     }
 }
 
-// Category Filter Click
+// Enhanced Category Filter Selection
 function setCategory(cat, element) {
-    currentCategory = cat;
-    document.querySelectorAll(".category-tab-btn").forEach(btn => btn.classList.remove("active"));
-    if (element) element.classList.add("active");
+    currentCategory = cat || "all";
+
+    // 1. Sync category tab buttons
+    document.querySelectorAll(".category-tab-btn").forEach(btn => {
+        const btnCat = btn.getAttribute("data-cat") || "";
+        if (btnCat === currentCategory) {
+            btn.classList.add("active");
+        } else {
+            btn.classList.remove("active");
+        }
+    });
+    if (element && element.classList && element.classList.contains("category-tab-btn")) {
+        element.classList.add("active");
+    }
+
+    // 2. Sync category showcase cards
+    document.querySelectorAll(".cat-showcase-card").forEach(card => {
+        const cardCat = card.getAttribute("data-cat") || "";
+        if (cardCat === currentCategory) {
+            card.classList.add("active");
+        } else {
+            card.classList.remove("active");
+        }
+    });
+
+    // 3. Sync category select dropdown
+    const catDropdown = document.getElementById("categorySelectDropdown");
+    if (catDropdown) {
+        catDropdown.value = currentCategory;
+    }
+
+    // 4. If called from outside the catalog, smooth scroll to catalog
+    if (!element || (!element.classList.contains("category-tab-btn") && !element.classList.contains("cat-showcase-card"))) {
+        const catalogElem = document.getElementById("catalog");
+        if (catalogElem) {
+            catalogElem.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
     renderProducts();
+}
+
+// Update model count badges across category cards
+function updateCategoryCountBadges() {
+    if (!products || !Array.isArray(products)) return;
+    const total = products.length;
+    const hdCount = products.filter(p => p.category === 'hd').length;
+    const ipCount = products.filter(p => p.category === 'ip').length;
+    const ptzCount = products.filter(p => p.category === 'ptz').length;
+    const wifiCount = products.filter(p => p.category === 'wifi').length;
+    const kitCount = products.filter(p => p.category === 'kit').length;
+
+    const elAll = document.getElementById("countCatAll");
+    if (elAll) elAll.innerText = `${total} મોડલ્સ ઉપલબ્ધ`;
+
+    const elHd = document.getElementById("countCatHd");
+    if (elHd) elHd.innerText = `${hdCount} મોડલ્સ`;
+
+    const elIp = document.getElementById("countCatIp");
+    if (elIp) elIp.innerText = `${ipCount} મોડલ્સ`;
+
+    const elPtz = document.getElementById("countCatPtz");
+    if (elPtz) elPtz.innerText = `${ptzCount} મોડલ્સ`;
+
+    const elWifi = document.getElementById("countCatWifi");
+    if (elWifi) elWifi.innerText = `${wifiCount} મોડલ્સ`;
+
+    const elKit = document.getElementById("countCatKit");
+    if (elKit) elKit.innerText = `${kitCount} કિટ્સ`;
 }
 
 // Product Filtering & Sorting Logic
@@ -736,6 +801,7 @@ function renderProducts() {
     });
 
     grid.innerHTML = html;
+    updateCategoryCountBadges();
 }
 
 function resetAllFilters() {
@@ -743,15 +809,31 @@ function resetAllFilters() {
     currentResolution = "all";
     currentSort = "featured";
     searchQuery = "";
+
     const searchInput = document.getElementById("searchInput");
     if (searchInput) searchInput.value = "";
+
     const resFilter = document.getElementById("filterResolution");
     if (resFilter) resFilter.value = "all";
+
     const sortFilter = document.getElementById("filterSort");
     if (sortFilter) sortFilter.value = "featured";
+
+    const catDropdown = document.getElementById("categorySelectDropdown");
+    if (catDropdown) catDropdown.value = "all";
+
     document.querySelectorAll(".category-tab-btn").forEach(btn => btn.classList.remove("active"));
-    const allBtn = document.querySelector(".category-tab-btn");
+    const allBtn = document.querySelector('.category-tab-btn[data-cat="all"]') || document.querySelector(".category-tab-btn");
     if (allBtn) allBtn.classList.add("active");
+
+    document.querySelectorAll(".cat-showcase-card").forEach(card => {
+        if (card.getAttribute("data-cat") === "all") {
+            card.classList.add("active");
+        } else {
+            card.classList.remove("active");
+        }
+    });
+
     renderProducts();
 }
 
@@ -1559,10 +1641,9 @@ function closeInvoiceModal() {
 // VISITING CARD & FLOATING WHATSAPP POPUP HELPERS
 // -------------------------------------------------------------
 
-function toggleWaPopup(e) {
-    if (e) {
-        e.preventDefault();
-        e.stopPropagation();
+function toggleWaPopup(event) {
+    if (event) {
+        event.stopPropagation();
     }
     const popup = document.getElementById("waPopupMenu");
     if (popup) {
@@ -1590,7 +1671,7 @@ document.addEventListener("click", function(e) {
     const popup = document.getElementById("waPopupMenu");
     const btn = document.getElementById("floatingWaBtn");
     if (popup && (popup.classList.contains("open") || popup.classList.contains("show"))) {
-        if (!popup.contains(e.target) && !btn.contains(e.target)) {
+        if (!popup.contains(e.target) && (!btn || !btn.contains(e.target))) {
             popup.classList.remove("open", "show");
         }
     }
