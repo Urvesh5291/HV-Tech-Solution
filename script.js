@@ -258,6 +258,44 @@ const I18N_STRINGS = {
     }
 };
 
+// Initial Sample Live Orders (Displayed immediately so screen is never empty)
+const DEFAULT_SAMPLE_ORDERS = [
+    {
+        orderId: "HV-892415",
+        date: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
+        customerName: "દિલીપભાઈ પટેલ (Dilip Patel)",
+        customerPhone: "9825145678",
+        address: "12, શિવમ બંગલોઝ, એસ.જી. હાઇવે, અમદાવાદ (SG Highway, Ahmedabad)",
+        installation: "Yes (હા, ટેકનિશિયન મોકલો)",
+        payment: "Cash on Delivery",
+        routedTo: "Patel Urvesh",
+        status: "New",
+        items: [
+            { id: 2, name: "360° Smart WiFi PTZ Camera 3MP", price: 2150, qty: 2, category: "ptz", img: PRESET_CAMERA_IMAGES.ptz }
+        ],
+        taxableTotal: 3644.07,
+        gstTotal: 655.93,
+        total: 4300
+    },
+    {
+        orderId: "HV-731940",
+        date: new Date(Date.now() - 86400000).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
+        customerName: "રમેશભાઈ શાહ (Ramesh Shah)",
+        customerPhone: "9909233445",
+        address: "402, શ્રીકૃષ્ણ કોમ્પ્લેક્સ, નવરંગપુરા, અમદાવાદ (Navrangpura, Ahmedabad)",
+        installation: "Yes (હા, ટેકનિશિયન મોકલો)",
+        payment: "UPI / Online",
+        routedTo: "Patel Harsh",
+        status: "Processing",
+        items: [
+            { id: 8, name: "Complete 4-Camera HD CCTV Combo Setup with 1TB HDD", price: 11999, qty: 1, category: "kit", img: PRESET_CAMERA_IMAGES.kit }
+        ],
+        taxableTotal: 10168.64,
+        gstTotal: 1830.36,
+        total: 11999
+    }
+];
+
 // App State
 let products = [];
 let cart = [];
@@ -271,6 +309,8 @@ let shopSettings = {
     ownerName: "Patel Urvesh & Patel Harsh",
     city: "Ahmedabad, Gujarat",
     email: "hvtechsolutions2004@gmail.com",
+    gstin: "24AAAPH1234F1Z5",
+    stateCode: "24 (Gujarat)",
     experienceYears: "28",
     upi: "hvtech@upi"
 };
@@ -299,6 +339,8 @@ function initApp() {
     applyLanguage(currentLang);
     renderProducts();
     updateCartCount();
+    updateOrdersBadge();
+    renderAdminOrdersList();
 }
 
 function applyLanguage(lang) {
@@ -391,10 +433,12 @@ function applySettingsToUI() {
     const inputName = document.getElementById("settingShopName");
     const inputCity = document.getElementById("settingCity");
     const inputUpi = document.getElementById("settingUpi");
+    const inputGstin = document.getElementById("settingGstin");
     if (inputPhone) inputPhone.value = shopSettings.phone;
     if (inputName) inputName.value = shopSettings.name;
     if (inputCity) inputCity.value = shopSettings.city;
     if (inputUpi) inputUpi.value = shopSettings.upi;
+    if (inputGstin) inputGstin.value = shopSettings.gstin || "24AAAPH1234F1Z5";
 }
 
 function loadCart() {
@@ -415,10 +459,24 @@ function loadOrders() {
     if (stored) {
         try { orders = JSON.parse(stored); } catch(e) { orders = []; }
     }
+    // If empty, pre-populate default sample orders so the owner always sees live data
+    if (!orders || orders.length === 0) {
+        orders = [...DEFAULT_SAMPLE_ORDERS];
+        saveOrders();
+    }
+    updateOrdersBadge();
 }
 
 function saveOrders() {
     localStorage.setItem("cctv_orders_history", JSON.stringify(orders));
+    updateOrdersBadge();
+}
+
+function updateOrdersBadge() {
+    const badge = document.getElementById("orderCountBadge");
+    if (badge) {
+        badge.innerText = orders.length;
+    }
 }
 
 function checkAdminSession() {
@@ -1025,6 +1083,7 @@ function closeCartDrawer() {
 function renderCart() {
     const container = document.getElementById("cartItemsContainer");
     const subtotalEl = document.getElementById("cartSubtotal");
+    const gstEl = document.getElementById("cartGstAmount");
     const totalEl = document.getElementById("cartGrandTotal");
     if (!container) return;
 
@@ -1037,6 +1096,7 @@ function renderCart() {
             </div>
         `;
         if (subtotalEl) subtotalEl.innerText = "₹0";
+        if (gstEl) gstEl.innerText = "₹0";
         if (totalEl) totalEl.innerText = "₹0";
         return;
     }
@@ -1066,9 +1126,14 @@ function renderCart() {
         `;
     });
 
+    const grossTotal = subtotal;
+    const taxableSubtotal = Math.round((grossTotal / 1.18) * 100) / 100;
+    const gstTotal = Math.round((grossTotal - taxableSubtotal) * 100) / 100;
+
     container.innerHTML = html;
-    if (subtotalEl) subtotalEl.innerText = `₹${Number(subtotal).toLocaleString('en-IN')}`;
-    if (totalEl) totalEl.innerText = `₹${Number(subtotal).toLocaleString('en-IN')}`;
+    if (subtotalEl) subtotalEl.innerText = `₹${Number(taxableSubtotal).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    if (gstEl) gstEl.innerText = `₹${Number(gstTotal).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    if (totalEl) totalEl.innerText = `₹${Number(grossTotal).toLocaleString('en-IN')}`;
 }
 
 // Open Checkout Details Form Modal
@@ -1077,6 +1142,19 @@ function proceedToCheckout() {
         showToast("તમારું કાર્ટ ખાલી છે! (Your cart is empty)", "info");
         return;
     }
+
+    const grossTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const taxableSubtotal = Math.round((grossTotal / 1.18) * 100) / 100;
+    const gstTotal = Math.round((grossTotal - taxableSubtotal) * 100) / 100;
+
+    const checkoutTaxableEl = document.getElementById("checkoutTaxable");
+    const checkoutGstEl = document.getElementById("checkoutGst");
+    const checkoutTotalEl = document.getElementById("checkoutTotal");
+
+    if (checkoutTaxableEl) checkoutTaxableEl.innerText = `₹${Number(taxableSubtotal).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    if (checkoutGstEl) checkoutGstEl.innerText = `₹${Number(gstTotal).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    if (checkoutTotalEl) checkoutTotalEl.innerText = `₹${Number(grossTotal).toLocaleString('en-IN')}`;
+
     closeCartDrawer();
     document.getElementById("checkoutModal").classList.add("open");
 }
@@ -1112,6 +1190,11 @@ function submitWhatsAppOrder(event) {
         itemsText += `${index + 1}. *${c.name}*%0A   Qty: ${c.qty} × ₹${c.price} = ₹${itemTotal}%0A`;
     });
 
+    const taxableSubtotal = Math.round((subtotal / 1.18) * 100) / 100;
+    const gstTotal = Math.round((subtotal - taxableSubtotal) * 100) / 100;
+    const cgst = Math.round((gstTotal / 2) * 100) / 100;
+    const sgst = Math.round((gstTotal / 2) * 100) / 100;
+
     const orderId = "HV-" + Math.floor(100000 + Math.random() * 900000);
     const dateStr = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
 
@@ -1132,7 +1215,12 @@ function submitWhatsAppOrder(event) {
     msg += `📹 *ORDERED CAMERAS:*%0A`;
     msg += itemsText;
     msg += `━━━━━━━━━━━━━━━━━━━━%0A`;
-    msg += `💰 *TOTAL AMOUNT:* *₹${Number(subtotal).toLocaleString('en-IN')}*%0A`;
+    msg += `💰 *BILLING SUMMARY (18% GST INCLUDED):*%0A`;
+    msg += `• Taxable Subtotal (કરપાત્ર રકમ): ₹${taxableSubtotal.toFixed(2)}%0A`;
+    msg += `• CGST (9%): ₹${cgst.toFixed(2)}%0A`;
+    msg += `• SGST (9%): ₹${sgst.toFixed(2)}%0A`;
+    msg += `• Total 18% GST: ₹${gstTotal.toFixed(2)}%0A`;
+    msg += `• *TOTAL AMOUNT (કુલ ચૂકવવાપાત્ર):* *₹${Number(subtotal).toLocaleString('en-IN')}*%0A`;
     msg += `━━━━━━━━━━━━━━━━━━━━%0A`;
     msg += `📞 *Direct Contacts:*%0A`;
     msg += `• Patel Urvesh: +91 91735 65466%0A`;
@@ -1151,11 +1239,16 @@ function submitWhatsAppOrder(event) {
         installation: needInstall,
         payment: payment,
         routedTo: recipientName,
+        status: "New",
         items: [...cart],
+        taxableTotal: taxableSubtotal,
+        gstTotal: gstTotal,
         total: subtotal
     };
     orders.unshift(orderRecord);
     saveOrders();
+    updateOrdersBadge();
+    renderAdminOrdersList();
 
     // Prepare Invoice Preview Data
     prepareInvoicePrint(orderRecord);
@@ -1223,82 +1316,231 @@ function submitSiteSurvey(event) {
 }
 
 // -------------------------------------------------------------
-// INVOICE & PRINTABLE BILL
+// 18% GST TAX INVOICE & PRINTABLE BILL GENERATOR
 // -------------------------------------------------------------
+
+function convertNumberToWords(amount) {
+    const num = Math.round(Number(amount) || 0);
+    if (num <= 0) return "Zero Rupees Only";
+
+    const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+    const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+
+    function getUnderThousand(n) {
+        let str = "";
+        if (n >= 100) {
+            str += ones[Math.floor(n / 100)] + " Hundred ";
+            n = n % 100;
+        }
+        if (n >= 20) {
+            str += tens[Math.floor(n / 10)] + " ";
+            n = n % 10;
+        }
+        if (n > 0) {
+            str += ones[n] + " ";
+        }
+        return str.trim();
+    }
+
+    let result = "";
+    const crore = Math.floor(num / 10000000);
+    const lakh = Math.floor((num % 10000000) / 100000);
+    const thousand = Math.floor((num % 100000) / 1000);
+    const remainder = num % 1000;
+
+    if (crore > 0) result += getUnderThousand(crore) + " Crore ";
+    if (lakh > 0) result += getUnderThousand(lakh) + " Lakh ";
+    if (thousand > 0) result += getUnderThousand(thousand) + " Thousand ";
+    if (remainder > 0) result += getUnderThousand(remainder);
+
+    return "INR " + result.trim() + " Rupees Only";
+}
 
 function prepareInvoicePrint(order) {
     const area = document.getElementById("invoicePrintArea");
     if (!area) return;
 
     let itemsRows = "";
+    let totalTaxable = 0;
+    let totalCgst = 0;
+    let totalSgst = 0;
+    let grandTotal = 0;
+
     order.items.forEach((item, i) => {
+        const itemGross = Number(item.price) * Number(item.qty);
+        const taxable = Math.round((itemGross / 1.18) * 100) / 100;
+        const gst = Math.round((itemGross - taxable) * 100) / 100;
+        const cgst = Math.round((gst / 2) * 100) / 100;
+        const sgst = Math.round((gst - cgst) * 100) / 100;
+        const unitTaxable = Math.round((taxable / item.qty) * 100) / 100;
+
+        totalTaxable += taxable;
+        totalCgst += cgst;
+        totalSgst += sgst;
+        grandTotal += itemGross;
+
+        const hsn = item.category === "kit" ? "8528" : "8525";
+
         itemsRows += `
-            <tr>
-                <td style="padding:8px; border:1px solid #ddd;">${i+1}</td>
-                <td style="padding:8px; border:1px solid #ddd;"><b>${item.name}</b></td>
-                <td style="padding:8px; border:1px solid #ddd; text-align:center;">${item.qty}</td>
-                <td style="padding:8px; border:1px solid #ddd; text-align:right;">₹${Number(item.price).toLocaleString('en-IN')}</td>
-                <td style="padding:8px; border:1px solid #ddd; text-align:right;">₹${Number(item.price * item.qty).toLocaleString('en-IN')}</td>
+            <tr style="border-bottom:1px solid #e2e8f0;">
+                <td style="padding:7px 5px; border:1px solid #cbd5e1; text-align:center;">${i+1}</td>
+                <td style="padding:7px 8px; border:1px solid #cbd5e1; text-align:left;">
+                    <b>${item.name}</b>
+                    <div style="font-size:11px; color:#64748b;">${item.resolution || ''} ${item.brand || 'HV Tech'} • 2 Yrs Replacement Warranty</div>
+                </td>
+                <td style="padding:7px 5px; border:1px solid #cbd5e1; text-align:center; font-family:monospace;">${hsn}</td>
+                <td style="padding:7px 5px; border:1px solid #cbd5e1; text-align:center; font-weight:bold;">${item.qty}</td>
+                <td style="padding:7px 6px; border:1px solid #cbd5e1; text-align:right;">₹${unitTaxable.toFixed(2)}</td>
+                <td style="padding:7px 6px; border:1px solid #cbd5e1; text-align:right; font-weight:600;">₹${taxable.toFixed(2)}</td>
+                <td style="padding:7px 5px; border:1px solid #cbd5e1; text-align:right; color:#475569;">₹${cgst.toFixed(2)}<br><small style="font-size:10px;">(9%)</small></td>
+                <td style="padding:7px 5px; border:1px solid #cbd5e1; text-align:right; color:#475569;">₹${sgst.toFixed(2)}<br><small style="font-size:10px;">(9%)</small></td>
+                <td style="padding:7px 8px; border:1px solid #cbd5e1; text-align:right; font-weight:bold; color:#0f172a;">₹${Number(itemGross).toLocaleString('en-IN')}</td>
             </tr>
         `;
     });
 
+    totalTaxable = Math.round(totalTaxable * 100) / 100;
+    totalCgst = Math.round(totalCgst * 100) / 100;
+    totalSgst = Math.round(totalSgst * 100) / 100;
+    const totalGst = Math.round((totalCgst + totalSgst) * 100) / 100;
+    grandTotal = Number(order.total) || grandTotal;
+    const amountInWords = convertNumberToWords(grandTotal);
+
     area.innerHTML = `
-        <div style="font-family:sans-serif; max-width:800px; margin:0 auto; padding:20px; border:2px solid #1e40af; border-radius:8px; background:#ffffff;">
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #1e40af; padding-bottom:15px; margin-bottom:15px; flex-wrap:wrap; gap:12px;">
+        <div style="font-family:'Segoe UI', Tahoma, Arial, sans-serif; max-width:850px; margin:0 auto; padding:20px; border:2px solid #0f172a; border-radius:8px; background:#ffffff; color:#0f172a;">
+            
+            <!-- Invoice Header -->
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #0f172a; padding-bottom:12px; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
                 <div style="display:flex; align-items:center; gap:12px;">
-                    <img src="hv_logo.png" alt="HV Logo" style="width:55px; height:auto; object-fit:contain; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,0.12);" onerror="this.style.display='none'">
+                    <img src="hv_logo.png" alt="HV Logo" style="width:60px; height:auto; object-fit:contain; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,0.1);" onerror="this.style.display='none'">
                     <div>
-                        <h2 style="color:#1e40af; margin:0 0 3px; font-size:22px; font-weight:800;">${shopSettings.name}</h2>
-                        <p style="margin:0 0 2px; font-size:12px; color:#475569;">Security & Surveillance Solutions • 28+ Years Trust</p>
-                        <p style="margin:0 0 2px; font-size:12px; color:#0f172a;"><b>Patel Urvesh:</b> +91 91735 65466 &nbsp;|&nbsp; <b>Patel Harsh:</b> +91 72038 75276</p>
-                        <p style="margin:0; font-size:11px; color:#64748b;">📧 hvtechsolutions2004@gmail.com &nbsp;|&nbsp; 📍 Ahmedabad, Gujarat</p>
+                        <h2 style="color:#1e40af; margin:0 0 2px; font-size:22px; font-weight:800; letter-spacing:0.5px;">${shopSettings.name}</h2>
+                        <p style="margin:0 0 2px; font-size:12px; font-weight:600; color:#334155;">Security & Surveillance Solutions • Sales, Installation & Service</p>
+                        <p style="margin:0 0 2px; font-size:11.5px; color:#475569;">📍 ${shopSettings.city} | State Code: <b>24 (Gujarat)</b></p>
+                        <p style="margin:0; font-size:11.5px; color:#0f172a;">
+                            <b>GSTIN:</b> <span style="font-family:monospace; font-weight:bold; color:#1e40af; font-size:12px;">${shopSettings.gstin || '24AAAPH1234F1Z5'}</span>
+                            &nbsp;|&nbsp; 📧 ${shopSettings.email}
+                        </p>
                     </div>
                 </div>
                 <div style="text-align:right;">
-                    <h3 style="margin:0; color:#0f172a; font-size:18px;">ESTIMATE / BILL</h3>
-                    <p style="margin:4px 0 0; font-size:13px;"><b>Bill No:</b> ${order.orderId}</p>
-                    <p style="margin:2px 0 0; font-size:12px; color:#666;">Date: ${order.date}</p>
+                    <div style="display:inline-block; background:#1e40af; color:#ffffff; padding:4px 12px; border-radius:4px; font-weight:800; font-size:12px; letter-spacing:1px; margin-bottom:6px;">
+                        TAX INVOICE / જીએસટી બિલ
+                    </div>
+                    <p style="margin:2px 0; font-size:12.5px;"><b>Invoice No:</b> <span style="font-family:monospace; font-weight:700;">${order.orderId}</span></p>
+                    <p style="margin:2px 0; font-size:12px;"><b>Date:</b> ${order.date}</p>
+                    <p style="margin:2px 0; font-size:11px; color:#64748b;">Place of Supply: <b>Gujarat (24)</b></p>
                 </div>
             </div>
 
-            <div style="background:#f8fafc; padding:12px; border-radius:6px; margin-bottom:15px; font-size:13px; border:1px solid #e2e8f0;">
-                <p style="margin:2px 0;"><b>Customer Name:</b> ${order.customerName}</p>
-                <p style="margin:2px 0;"><b>Phone:</b> ${order.customerPhone}</p>
-                <p style="margin:2px 0;"><b>Delivery Address:</b> ${order.address}</p>
-                <p style="margin:2px 0;"><b>Installation Requested:</b> ${order.installation}</p>
+            <!-- Helpline & Partner Strip -->
+            <div style="display:flex; justify-content:space-between; background:#f1f5f9; padding:7px 12px; border-radius:6px; font-size:11.5px; margin-bottom:12px; border:1px solid #e2e8f0; flex-wrap:wrap; gap:6px;">
+                <div>
+                    📞 <b>Helpline:</b> Patel Urvesh: <b>+91 91735 65466</b> &nbsp;|&nbsp; Patel Harsh: <b>+91 72038 75276</b>
+                </div>
+                <div>
+                    👤 <b>Attended By:</b> <span style="color:#1e40af; font-weight:700;">${order.routedTo || 'Patel Urvesh'}</span>
+                </div>
             </div>
 
-            <table style="width:100%; border-collapse:collapse; font-size:13px; margin-bottom:15px;">
+            <!-- Billed To & Shipped To Grid -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; font-size:12px;">
+                <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:10px;">
+                    <div style="font-weight:700; color:#1e40af; border-bottom:1px solid #e2e8f0; padding-bottom:4px; margin-bottom:5px;">
+                        👤 BILLED TO (ગ્રાહકની વિગત)
+                    </div>
+                    <p style="margin:2px 0;"><b>Customer:</b> ${order.customerName}</p>
+                    <p style="margin:2px 0;"><b>Mobile:</b> ${order.customerPhone}</p>
+                    <p style="margin:2px 0;"><b>State:</b> Gujarat (Code: 24)</p>
+                </div>
+                <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:10px;">
+                    <div style="font-weight:700; color:#1e40af; border-bottom:1px solid #e2e8f0; padding-bottom:4px; margin-bottom:5px;">
+                        🚚 SHIPPED TO / SITE ADDRESS
+                    </div>
+                    <p style="margin:2px 0;"><b>Delivery Address:</b> ${order.address}</p>
+                    <p style="margin:2px 0;"><b>Installation:</b> <span style="font-weight:600; color:#059669;">${order.installation || 'Required'}</span></p>
+                    <p style="margin:2px 0;"><b>Payment Mode:</b> ${order.payment || 'Cash on Delivery / UPI'}</p>
+                </div>
+            </div>
+
+            <!-- GST Product Breakdown Table -->
+            <table style="width:100%; border-collapse:collapse; font-size:11.5px; margin-bottom:12px;">
                 <thead>
-                    <tr style="background:#1e40af; color:white;">
-                        <th style="padding:8px; border:1px solid #1e40af;">#</th>
-                        <th style="padding:8px; border:1px solid #1e40af; text-align:left;">Item Description</th>
-                        <th style="padding:8px; border:1px solid #1e40af;">Qty</th>
-                        <th style="padding:8px; border:1px solid #1e40af; text-align:right;">Rate</th>
-                        <th style="padding:8px; border:1px solid #1e40af; text-align:right;">Total</th>
+                    <tr style="background:#1e40af; color:#ffffff;">
+                        <th style="padding:7px 5px; border:1px solid #1e40af; text-align:center; width:26px;">#</th>
+                        <th style="padding:7px 8px; border:1px solid #1e40af; text-align:left;">Item Description</th>
+                        <th style="padding:7px 5px; border:1px solid #1e40af; text-align:center; width:45px;">HSN</th>
+                        <th style="padding:7px 5px; border:1px solid #1e40af; text-align:center; width:36px;">Qty</th>
+                        <th style="padding:7px 6px; border:1px solid #1e40af; text-align:right; width:70px;">Taxable Rate</th>
+                        <th style="padding:7px 6px; border:1px solid #1e40af; text-align:right; width:75px;">Taxable Amt</th>
+                        <th style="padding:7px 5px; border:1px solid #1e40af; text-align:right; width:65px;">CGST (9%)</th>
+                        <th style="padding:7px 5px; border:1px solid #1e40af; text-align:right; width:65px;">SGST (9%)</th>
+                        <th style="padding:7px 8px; border:1px solid #1e40af; text-align:right; width:80px;">Total (₹)</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${itemsRows}
                 </tbody>
-                <tfoot>
-                    <tr style="font-weight:bold; background:#f1f5f9;">
-                        <td colspan="4" style="padding:10px; text-align:right; border:1px solid #ddd; font-size:15px;">Grand Total:</td>
-                        <td style="padding:10px; text-align:right; border:1px solid #ddd; font-size:16px; color:#1e40af;">₹${Number(order.total).toLocaleString('en-IN')}</td>
-                    </tr>
-                </tfoot>
             </table>
 
-            <div style="display:flex; justify-content:space-between; margin-top:25px; font-size:12px; color:#555; flex-wrap:wrap; gap:15px;">
-                <div>
-                    <p style="margin:3px 0;">• 2 Years Standard Replacement Warranty on Cameras & DVR.</p>
-                    <p style="margin:3px 0;">• Free onsite setup guide & mobile remote app configuration.</p>
-                    <p style="margin:3px 0;">• For support & service: Patel Urvesh (91735 65466) / Patel Harsh (72038 75276)</p>
+            <!-- GST Summary & Amount in Words -->
+            <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:12px; margin-bottom:14px;">
+                <div style="border:1px solid #cbd5e1; border-radius:6px; padding:10px; font-size:11.5px; background:#f8fafc; display:flex; flex-direction:column; justify-content:space-between;">
+                    <div>
+                        <div style="font-weight:700; color:#0f172a; margin-bottom:4px;">💰 AMOUNT IN WORDS:</div>
+                        <p style="margin:0 0 8px; font-style:italic; font-weight:700; color:#1e40af; line-height:1.4;">
+                            ${amountInWords}
+                        </p>
+                    </div>
+                    <div style="border-top:1px dashed #cbd5e1; padding-top:6px; font-size:11px; color:#334155;">
+                        <b>Payment Details (GPay / PhonePe / Paytm / UPI):</b><br>
+                        • UPI ID: <b style="color:#1e40af;">${shopSettings.upi}</b><br>
+                        • Direct Helpline: Patel Urvesh (91735 65466) / Patel Harsh (72038 75276)<br>
+                        • Applicable 18% GST (CGST 9% + SGST 9%) included.
+                    </div>
                 </div>
-                <div style="text-align:center;">
-                    <br><br>
-                    <p style="border-top:1px solid #aaa; padding-top:4px;"><b>Authorized Signatory</b><br>${shopSettings.name}</p>
+
+                <table style="width:100%; border-collapse:collapse; font-size:12px; background:#ffffff; border:1px solid #cbd5e1; border-radius:6px;">
+                    <tr>
+                        <td style="padding:6px 8px; border-bottom:1px solid #e2e8f0; color:#475569;">Taxable Subtotal (કરપાત્ર રકમ):</td>
+                        <td style="padding:6px 8px; border-bottom:1px solid #e2e8f0; text-align:right; font-weight:600;">₹${totalTaxable.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 8px; border-bottom:1px solid #e2e8f0; color:#475569;">CGST @ 9% (કેન્દ્રીય કર):</td>
+                        <td style="padding:6px 8px; border-bottom:1px solid #e2e8f0; text-align:right; font-weight:600;">₹${totalCgst.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px 8px; border-bottom:1px solid #e2e8f0; color:#475569;">SGST @ 9% (રાજ્ય કર):</td>
+                        <td style="padding:6px 8px; border-bottom:1px solid #e2e8f0; text-align:right; font-weight:600;">₹${totalSgst.toFixed(2)}</td>
+                    </tr>
+                    <tr style="background:#f1f5f9; font-weight:600;">
+                        <td style="padding:6px 8px; border-bottom:1px solid #cbd5e1; color:#0f172a;">Total 18% GST (કુલ જીએસટી):</td>
+                        <td style="padding:6px 8px; border-bottom:1px solid #cbd5e1; text-align:right; color:#059669;">₹${totalGst.toFixed(2)}</td>
+                    </tr>
+                    <tr style="background:#1e40af; color:#ffffff; font-weight:800; font-size:13.5px;">
+                        <td style="padding:8px;">GRAND TOTAL (કુલ રકમ):</td>
+                        <td style="padding:8px; text-align:right;">₹${Number(grandTotal).toLocaleString('en-IN')}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Terms & Conditions + Authorized Signatory -->
+            <div style="display:grid; grid-template-columns:1.3fr 1fr; gap:15px; border-top:1px solid #cbd5e1; padding-top:10px; font-size:11px; color:#475569;">
+                <div>
+                    <b>TERMS & CONDITIONS (વોરંટી અને શરતો):</b>
+                    <ol style="margin:3px 0 0; padding-left:15px; line-height:1.4;">
+                        <li>All cameras and DVR come with <b>2 Years Manufacturer Replacement Warranty</b>.</li>
+                        <li>Warranty does not cover physical damage, electrical short-circuit or burning.</li>
+                        <li>Mobile remote view application configuration provided complimentary.</li>
+                        <li>Disputes subject to Ahmedabad Jurisdiction only.</li>
+                    </ol>
+                </div>
+                <div style="text-align:center; display:flex; flex-direction:column; justify-content:space-between; align-items:center;">
+                    <div style="font-size:11px; color:#334155;">For <b>${shopSettings.name}</b></div>
+                    <div style="margin-top:20px; border-top:1.5px solid #0f172a; width:170px; padding-top:4px;">
+                        <b>Authorized Signatory</b><br>
+                        <span style="font-size:10px; color:#64748b;">(Patel Urvesh / Patel Harsh)</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1536,45 +1778,220 @@ function renderAdminProductsTable() {
     tbody.innerHTML = html;
 }
 
-// Render Admin Orders List
+// -------------------------------------------------------------
+// LIVE ORDERS MANAGEMENT CONTROLLER
+// -------------------------------------------------------------
+
+function openLiveOrdersModal() {
+    renderAdminOrdersList();
+    const modal = document.getElementById("liveOrdersModal");
+    if (modal) modal.classList.add("open");
+}
+
+function closeLiveOrdersModal() {
+    const modal = document.getElementById("liveOrdersModal");
+    if (modal) modal.classList.remove("open");
+}
+
+function viewOrderInvoice(orderId) {
+    const ord = orders.find(o => o.orderId === orderId);
+    if (!ord) {
+        showToast("ઓર્ડર મળ્યો નથી!", "info");
+        return;
+    }
+    prepareInvoicePrint(ord);
+    const invModal = document.getElementById("invoiceModal");
+    if (invModal) invModal.classList.add("open");
+}
+
+function toggleOrderStatus(orderId) {
+    const ord = orders.find(o => o.orderId === orderId);
+    if (!ord) return;
+    if (!ord.status || ord.status === "New") ord.status = "Processing";
+    else if (ord.status === "Processing") ord.status = "Completed";
+    else ord.status = "New";
+    saveOrders();
+    renderAdminOrdersList();
+    showToast(`ઓર્ડર #${orderId} સ્ટેટસ: ${ord.status}`, "info");
+}
+
+function deleteOrder(orderId) {
+    if (confirm(`શું તમે ઓર્ડર #${orderId} ડિલીટ કરવા માંગો છો?`)) {
+        orders = orders.filter(o => o.orderId !== orderId);
+        saveOrders();
+        renderAdminOrdersList();
+        showToast(`ઓર્ડર #${orderId} ડિલીટ કરવામાં આવ્યો.`, "info");
+    }
+}
+
+function addTestLiveOrder() {
+    const testCustomers = [
+        { name: "રાજેશભાઈ પટેલ (Rajesh Patel)", phone: "9825167890", addr: "42, ગોકુલધામ સોસાયટી, બોડકદેવ, અમદાવાદ" },
+        { name: "વિજયકુમાર જોષી (Vijay Joshi)", phone: "9879012345", addr: "105, શિવાલિક પ્લાઝા, આશ્રમ રોડ, અમદાવાદ" },
+        { name: "સુરેશભાઈ મહેતા (Suresh Mehta)", phone: "9426098765", addr: "18, શાંતિનિકેતન બંગલોઝ, થલતેજ, અમદાવાદ" },
+        { name: "ભાવેશભાઈ સોની (Bhavesh Soni)", phone: "9909943210", addr: "Shop 12, રતનપોળ, રીલીફ રોડ, અમદાવાદ" }
+    ];
+    const cust = testCustomers[Math.floor(Math.random() * testCustomers.length)];
+    const orderId = "HV-" + Math.floor(100000 + Math.random() * 900000);
+    const dateStr = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+    const product = products[Math.floor(Math.random() * products.length)] || DEFAULT_PRODUCTS[0];
+    const qty = Math.floor(Math.random() * 2) + 1;
+    const total = Number(product.price) * qty;
+    const taxable = Math.round((total / 1.18) * 100) / 100;
+    const gst = Math.round((total - taxable) * 100) / 100;
+    const routedTo = Math.random() > 0.5 ? "Patel Urvesh" : "Patel Harsh";
+
+    const newOrd = {
+        orderId: orderId,
+        date: dateStr,
+        customerName: cust.name,
+        customerPhone: cust.phone,
+        address: cust.addr,
+        installation: "Yes (હા, ટેકનિશિયન મોકલો)",
+        payment: "Cash on Delivery",
+        routedTo: routedTo,
+        status: "New",
+        items: [{ ...product, qty: qty }],
+        taxableTotal: taxable,
+        gstTotal: gst,
+        total: total
+    };
+
+    orders.unshift(newOrd);
+    saveOrders();
+    renderAdminOrdersList();
+    showToast(`🎉 નવો લાઈવ ઓર્ડર #${orderId} ઉમેરાયો!`, "success");
+}
+
+function clearAllOrders() {
+    if (confirm("શું તમે બધા ઓર્ડર્સ હિસ્ટ્રી ક્લીયર કરવા માંગો છો?")) {
+        orders = [];
+        saveOrders();
+        renderAdminOrdersList();
+        showToast("બધા ઓર્ડર્સ હિસ્ટ્રી ક્લીયર થઈ ગયા.", "info");
+    }
+}
+
+function refreshLiveOrders() {
+    loadOrders();
+    renderAdminOrdersList();
+    showToast("🔄 લાઈવ ઓર્ડર્સ રિફ્રેશ થયા!", "info");
+}
+
+// Render Admin & Live Orders List (Renders in both modal and tab)
 function renderAdminOrdersList() {
-    const container = document.getElementById("adminOrdersList");
-    if (!container) return;
+    const containers = [
+        document.getElementById("liveOrdersList"),
+        document.getElementById("adminOrdersList")
+    ].filter(Boolean);
+
+    if (containers.length === 0) return;
 
     if (orders.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding:30px; color:#64748b;">No customer orders placed yet. Orders will show here live when customers checkout.</div>`;
+        const emptyHtml = `
+            <div style="text-align:center; padding:45px 20px; background:#f8fafc; border:2px dashed #cbd5e1; border-radius:12px;">
+                <div style="font-size:42px; margin-bottom:10px;">📦</div>
+                <h4 style="color:#0f172a; margin-bottom:6px;">હજુ સુધી કોઈ ઓર્ડર મળ્યો નથી (No Orders Placed Yet)</h4>
+                <p style="font-size:13px; color:#64748b; margin-bottom:16px;">ગ્રાહક જ્યારે કાર્ટમાંથી ઓર્ડર કરશે ત્યારે તુરંત અહીં લાઈવ દેખાશે.</p>
+                <button class="btn-hero-primary" style="padding:9px 20px; font-size:13px;" onclick="addTestLiveOrder()">
+                    ➕ ટેસ્ટ ઓર્ડર ઉમેરો (Create Test Order)
+                </button>
+            </div>
+        `;
+        containers.forEach(c => c.innerHTML = emptyHtml);
         return;
     }
 
     let html = "";
     orders.forEach((ord, i) => {
-        const itemsList = (ord.items || []).map(it => `${it.name} (Qty: ${it.qty})`).join(", ");
+        const isNew = !ord.status || ord.status === "New";
+        const statusColor = isNew ? "#ef4444" : (ord.status === "Processing" ? "#d97706" : "#15803d");
+        const statusBg = isNew ? "#fee2e2" : (ord.status === "Processing" ? "#fef3c7" : "#dcfce7");
+        const statusLabel = isNew ? "🔴 નવો ઓર્ડર (New)" : (ord.status === "Processing" ? "🟡 પ્રોસેસિંગ" : "🟢 પૂર્ણ થયેલ");
+
+        const taxable = ord.taxableTotal || (Math.round((ord.total / 1.18) * 100) / 100);
+        const gst = ord.gstTotal || (Math.round((ord.total - taxable) * 100) / 100);
+
+        let itemsHtml = "";
+        (ord.items || []).forEach(it => {
+            const itImg = it.img || PRESET_CAMERA_IMAGES[it.fallbackPreset || "dome"];
+            itemsHtml += `
+                <div style="display:flex; align-items:center; gap:10px; background:#ffffff; border:1px solid #e2e8f0; border-radius:6px; padding:6px 10px; margin-bottom:5px;">
+                    <img src="${itImg}" style="width:36px; height:36px; object-fit:contain; border-radius:4px; border:1px solid #eee;" onerror="this.src='hv_logo.png'">
+                    <div style="flex:1; font-size:12.5px;">
+                        <b>${it.name}</b>
+                        <div style="font-size:11px; color:#64748b;">Qty: ${it.qty} × ₹${Number(it.price).toLocaleString('en-IN')} = ₹${Number(it.price * it.qty).toLocaleString('en-IN')}</div>
+                    </div>
+                </div>
+            `;
+        });
+
+        const cleanCustPhone = (ord.customerPhone || "").replace(/[^0-9]/g, "");
+
         html += `
-            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px; margin-bottom:12px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                    <span style="font-weight:bold; color:#1e40af;">Order #${ord.orderId || (i+1)}</span>
-                    <span style="font-size:12px; color:#64748b;">${ord.date}</span>
+            <div style="background:#ffffff; border:1.5px solid ${isNew ? '#3b82f6' : '#cbd5e1'}; border-radius:10px; padding:16px; margin-bottom:16px; box-shadow:0 3px 10px rgba(0,0,0,0.05); position:relative;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; border-bottom:1px solid #f1f5f9; padding-bottom:10px; margin-bottom:12px;">
+                    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                        <span style="font-size:16px; font-weight:800; color:#1e40af; font-family:monospace;">#${ord.orderId || (i+1)}</span>
+                        <span style="background:${statusBg}; color:${statusColor}; font-size:11px; font-weight:700; padding:3px 9px; border-radius:12px;">${statusLabel}</span>
+                        <span style="font-size:12px; color:#64748b;">📅 ${ord.date}</span>
+                    </div>
+                    <div style="font-size:12px; background:#eff6ff; color:#1e40af; padding:4px 10px; border-radius:6px; font-weight:600;">
+                        👤 ઓર્ડર રિસીવર: <b>${ord.routedTo || 'Patel Urvesh'}</b>
+                    </div>
                 </div>
-                <div style="font-size:13px; margin-bottom:4px;">
-                    <b>Customer:</b> ${ord.customerName} | <b>Phone:</b> <a href="tel:${ord.customerPhone}" style="color:#2563eb;">${ord.customerPhone}</a>
+
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap:12px; font-size:12.5px; margin-bottom:12px; background:#f8fafc; padding:12px; border-radius:8px; border:1px solid #e2e8f0;">
+                    <div>
+                        <div style="color:#64748b; font-size:11px;">ગ્રાહકની વિગત:</div>
+                        <div style="font-weight:700; font-size:13.5px; color:#0f172a; margin:2px 0;">${ord.customerName}</div>
+                        <div>📞 <a href="tel:${ord.customerPhone}" style="color:#2563eb; font-weight:600; text-decoration:none;">${ord.customerPhone}</a></div>
+                    </div>
+                    <div>
+                        <div style="color:#64748b; font-size:11px;">ડિલિવરી સરનામું:</div>
+                        <div style="color:#334155; margin-top:2px;">📍 ${ord.address}</div>
+                    </div>
+                    <div>
+                        <div style="color:#64748b; font-size:11px;">ઇન્સ્ટોલેશન & પેમેન્ટ:</div>
+                        <div>🔧 <b>${ord.installation || 'Installation Needed'}</b></div>
+                        <div>💳 <b>${ord.payment || 'Cash on Delivery'}</b></div>
+                    </div>
                 </div>
-                <div style="font-size:13px; margin-bottom:4px; color:#475569;">
-                    <b>Address:</b> ${ord.address} | <b>Installation:</b> ${ord.installation}
+
+                <div style="margin-bottom:12px;">
+                    <div style="font-size:11.5px; font-weight:700; color:#475569; margin-bottom:6px;">ઓર્ડર કરેલા કેમેરા:</div>
+                    ${itemsHtml}
                 </div>
-                <div style="font-size:12px; color:#334155; margin-bottom:6px; background:#fff; padding:6px; border-radius:4px;">
-                    <b>Items:</b> ${itemsList}
-                </div>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-weight:bold; font-size:15px; color:#0f172a;">Total: ₹${Number(ord.total).toLocaleString('en-IN')}</span>
-                    <a href="https://wa.me/${ord.customerPhone}?text=Hello%20${encodeURIComponent(ord.customerName)}%2C%20regarding%20your%20CCTV%20order%20${ord.orderId}" target="_blank" class="btn-sm-accent" style="text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
-                        💬 Chat on WhatsApp
-                    </a>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; border-top:1px solid #e2e8f0; padding-top:12px;">
+                    <div>
+                        <div style="font-size:11px; color:#64748b;">
+                            કરપાત્ર: ₹${Number(taxable).toFixed(2)} + 18% GST: ₹${Number(gst).toFixed(2)}
+                        </div>
+                        <div style="font-size:18px; font-weight:800; color:#0f172a;">
+                            કુલ રકમ: <span style="color:#1e40af;">₹${Number(ord.total).toLocaleString('en-IN')}</span> <span style="font-size:11px; font-weight:normal; color:#10b981;">(18% GST સહિત)</span>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button class="btn-hero-primary" style="padding:7px 14px; font-size:12.5px;" onclick="viewOrderInvoice('${ord.orderId}')">
+                            🧾 18% GST બિલ પ્રિન્ટ / જુઓ
+                        </button>
+                        <a href="https://wa.me/91${cleanCustPhone}?text=Hello%20${encodeURIComponent(ord.customerName)}%2C%20regarding%20your%20CCTV%20order%20${ord.orderId}%20from%20HV%20Tech%20Solutions." target="_blank" class="btn-sm-accent" style="text-decoration:none; display:inline-flex; align-items:center; gap:4px; font-size:12.5px; padding:7px 12px;">
+                            💬 WhatsApp ચેટ
+                        </a>
+                        <button class="btn-sm-light" style="font-size:12px; padding:7px 10px;" onclick="toggleOrderStatus('${ord.orderId}')" title="Change Status">
+                            🔄 સ્ટેટસ બદલો
+                        </button>
+                        <button class="btn-sm-light" style="background:#fee2e2; color:#b91c1c; border-color:#fca5a5; font-size:12px; padding:7px 10px;" onclick="deleteOrder('${ord.orderId}')" title="Delete Order">
+                            🗑️
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
     });
 
-    container.innerHTML = html;
+    containers.forEach(c => c.innerHTML = html);
 }
 
 // Save Shop & WhatsApp Settings
@@ -1585,14 +2002,17 @@ function handleSaveSettings(event) {
     const name = document.getElementById("settingShopName").value.trim();
     const city = document.getElementById("settingCity").value.trim();
     const upi = document.getElementById("settingUpi").value.trim();
+    const gstinInput = document.getElementById("settingGstin");
+    const gstin = gstinInput ? gstinInput.value.trim() : "";
 
     if (phone) shopSettings.phone = phone;
     if (name) shopSettings.name = name;
     if (city) shopSettings.city = city;
     if (upi) shopSettings.upi = upi;
+    if (gstin) shopSettings.gstin = gstin;
 
     saveSettings();
-    showToast("✅ સેટિંગ્સ સફળતાપૂર્વક સાચવાઈ ગયા! (Settings Saved)", "success");
+    showToast("✅ દુકાન સેટિંગ્સ & GSTIN સફળતાપૂર્વક સાચવાઈ ગયા! (Settings Saved)", "success");
 }
 
 // -------------------------------------------------------------
