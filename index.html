@@ -71,6 +71,16 @@
         </div>
     </header>
 
+    <!-- Main Navigation Bar -->
+    <nav class="main-navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-link active">🛒 કેમેરા સ્ટોર (Shop)</a>
+            <a href="quotation.html" class="nav-link">📋 ક્વોટેશન કેલ્ક્યુલેટર (Get Quotation)</a>
+            <a href="services.html" class="nav-link">🛠️ સર્વિસ & રીપેરીંગ (Services)</a>
+            <a href="#inquirySection" class="nav-link">📋 ફ્રી સાઇટ વિઝિટ</a>
+        </div>
+    </nav>
+
     <!-- 3. Admin Live Action Quick Banner (Shows when Admin Mode is ON) -->
     <div class="admin-quick-banner" id="adminQuickBanner">
         <div class="admin-banner-inner">
@@ -98,8 +108,9 @@
             </p>
             <div class="hero-buttons">
                 <a href="#catalog" class="btn-hero-primary" data-i18n="shop_btn">🛍️ કેમેરા ખરીદો / Shop Now</a>
-                <button class="btn-hero-secondary" onclick="openOwnerHub('add')" data-i18n="seller_btn">➕ પ્રોડક્ટ ઉમેરો / કિંમત બદલો (Seller)</button>
-                <a href="#inquirySection" class="btn-hero-secondary" data-i18n="survey_btn">📋 ફ્રી સાઇટ સર્વે ક્વોટેશન</a>
+                <a href="quotation.html" class="btn-hero-primary" style="background:#0f766e; border-color:#0f766e;">📋 ક્વોટેશન બનાવો (Quotation)</a>
+                <a href="services.html" class="btn-hero-secondary">🛠️ સર્વિસ & રીપેરીંગ</a>
+                <button class="btn-hero-secondary" onclick="openOwnerHub('add')" data-i18n="seller_btn">➕ પ્રોડક્ટ ઉમેરો (Seller)</button>
             </div>
         </div>
     </section>
@@ -895,25 +906,32 @@
 
     <!-- Floating WhatsApp Popup Menu -->
     <div class="wa-popup-menu" id="waPopupMenu">
-        <div class="wa-popup-title">💬 WhatsApp Chat (સંપર્ક કરો)</div>
+        <div class="wa-popup-title">💬 WhatsApp & Contact (સંપર્ક કરો)</div>
         <a href="https://wa.me/919173565466?text=Hello%20Patel%20Urvesh%2C%20I%20am%20interested%20in%20CCTV%20Cameras%20from%20HV%20Tech%20Solutions" target="_blank" class="wa-popup-option">
             <div>
                 <b>Patel Urvesh</b><br>
-                <small style="color:#64748b;">+91 91735 65466</small>
+                <small style="color:#64748b;">+91 91735 65466 (WhatsApp)</small>
             </div>
             <div class="wa-popup-btn-icon">💬</div>
         </a>
         <a href="https://wa.me/917203875276?text=Hello%20Patel%20Harsh%2C%20I%20am%20interested%20in%20CCTV%20Cameras%20from%20HV%20Tech%20Solutions" target="_blank" class="wa-popup-option">
             <div>
                 <b>Patel Harsh</b><br>
-                <small style="color:#64748b;">+91 72038 75276</small>
+                <small style="color:#64748b;">+91 72038 75276 (WhatsApp)</small>
             </div>
             <div class="wa-popup-btn-icon">💬</div>
+        </a>
+        <a href="tel:+919173565466" class="wa-popup-option" style="background:#f1f5f9;">
+            <div>
+                <b>📞 ડાયરેક્ટ કૉલ કરો</b><br>
+                <small style="color:#2563eb;">Urvesh: 9173565466 / Harsh: 7203875276</small>
+            </div>
+            <div class="wa-popup-btn-icon" style="background:#2563eb;">📞</div>
         </a>
     </div>
 
     <!-- Floating WhatsApp Button -->
-    <button class="floating-wa-btn" id="floatingWaBtn" onclick="toggleWaPopup()" title="WhatsApp Chat / સંપર્ક કરો">
+    <button class="floating-wa-btn" id="floatingWaBtn" onclick="toggleWaPopup(event)" title="WhatsApp & SMS Chat / સંપર્ક કરો">
         💬
     </button>
 
